@@ -18,6 +18,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Volta do login: o site, depois de autenticar no navegador,
+                 manda o usuário para com.smartbalanco.app://login?codigo=...
+                 e é este filtro que faz o Android devolver ao app.
+                 O login do Google não roda em WebView, então ele acontece
+                 no navegador de verdade e só o resultado volta para cá. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.smartbalanco.app" />
+            </intent-filter>
         </activity>
 
         <!-- Widget da tela inicial. exported="true" é obrigatório: quem
