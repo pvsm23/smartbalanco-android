@@ -1,0 +1,101 @@
+# Compila o APK do Smartbalanço e publica no Releases.
+#
+# Por que existe: o Gradle não roda no ambiente do Claude (o launcher bifurca
+# um daemon e conversa por socket loopback, que lá é bloqueado). Tirando esse
+# passo da máquina local, o ciclo editar → commitar → buildar → publicar cabe
+# inteiro no assistente, sem abrir o PowerShell.
+#
+# Pré-requisito (UMA vez): o Secret DEBUG_KEYSTORE_B64 no repositório, com o
+# conteúdo de android/app/debug.keystore em base64. Sem ele, cada build sai
+# assinado com uma chave diferente e o Android recusa instalar por cima do app
+# que já está no celular.
+#
+# O app é uma casca: o conteúdo vem de https://smartbalanco.github.io/smartbalanco/
+# (server.url no capacitor.config.json). Ou seja, mudança de tela NÃO exige APK
+# novo — só mudanças nativas (plugins, permissões, ícone) precisam.
+
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "capacitor.config.json"
+      - "package.json"
+      - ".github/workflows/build-apk.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # 22+ é exigência do Capacitor CLI: no 20 o cap sync morre.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: android-actions/setup-android@v3
+
+      # O segredo vai por env, não interpolado no comando: assim o shell não vê
+      # o valor como texto, e o printf não acrescenta o \n que o echo põe.
+      - name: Restaura a debug.keystore (assinatura estável entre builds)
+        env:
+          DEBUG_KEYSTORE_B64: ${{ secrets.DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$DEBUG_KEYSTORE_B64" ]; then
+            echo "::error::Secret DEBUG_KEYSTORE_B64 vazio -- o APK sairia com outra assinatura e nao instalaria por cima do app ja instalado."
+            exit 1
+          fi
+          printf '%s' "$DEBUG_KEYSTORE_B64" | base64 -d > android/app/debug.keystore
+          keytool -list -keystore android/app/debug.keystore -storepass android -alias androiddebugkey
+
+      - name: Sincroniza o Capacitor
+        run: npx cap sync android
+
+      # chmod porque o repo é mantido no Windows, que não guarda o bit de
+      # execução no Git -- sem isso o runner Linux para com exit 126.
+      - name: Compila o APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon --console=plain
+
+      - name: Lê a versão do build.gradle
+        id: versao
+        run: echo "v=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle)" >> "$GITHUB_OUTPUT"
+
+      # Dois nomes de propósito: o fixo é o que o link /releases/latest/download/
+      # serve; o versionado evita o celular oferecer o APK antigo em Downloads.
+      - name: Prepara os dois nomes do APK
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk Smartbalanco.apk
+          cp Smartbalanco.apk "Smartbalanco-v${{ steps.versao.outputs.v }}.apk"
+
+      - name: Publica no Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="v${{ steps.versao.outputs.v }}"
+          apks=(Smartbalanco.apk "Smartbalanco-v${{ steps.versao.outputs.v }}.apk")
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "${apks[@]}" --clobber
+          else
+            gh release create "$tag" "${apks[@]}" \
+              --title "Smartbalanço $tag" \
+              --notes "APK gerado pelo CI. O conteudo do app vem do site, entao so' e' preciso instalar de novo quando muda algo nativo."
+          fi

@@ -1,0 +1,19 @@
+{
+  "appId": "com.smartbalanco.app",
+  "appName": "Smartbalanço",
+  "webDir": "www",
+  "server": {
+    "url": "https://smartbalanco.github.io/smartbalanco/",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_smartbalanco",
+      "iconColor": "#2E9E6B"
+    }
+  }
+}
