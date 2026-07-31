@@ -3,6 +3,7 @@ package com.smartbalanco.app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -56,18 +57,35 @@ public class DespesasWidgetService extends RemoteViewsService {
         @Override
         public RemoteViews getViewAt(int posicao) {
             RemoteViews linha = new RemoteViews(context.getPackageName(), R.layout.widget_item);
+
+            String alvo = "";   // o que "Liquidar" vai abrir
+
             try {
                 JSONObject item = itens.getJSONObject(posicao);
                 linha.setTextViewText(R.id.item_descricao, item.optString("descricao", ""));
                 linha.setTextViewText(R.id.item_valor, item.optString("valor", ""));
+
+                // Fatura de cartão liquida o conjunto; despesa avulsa vai pelo Nº Mov.
+                if (item.optBoolean("ehFatura", false)) {
+                    alvo = "com.smartbalanco.app://liquidarFatura"
+                         + "?cartao=" + Uri.encode(item.optString("cartao", ""))
+                         + "&venc=" + Uri.encode(item.optString("vencimento", ""));
+                } else {
+                    alvo = "com.smartbalanco.app://liquidar?mov=" + item.optInt("numMov", 0);
+                }
             } catch (Exception e) {
                 linha.setTextViewText(R.id.item_descricao, "—");
                 linha.setTextViewText(R.id.item_valor, "");
             }
 
             // Preenche o buraco do PendingIntent-template do provider: sem isso
-            // o toque na linha não abre nada.
+            // nem a linha nem o botão abrem coisa alguma.
             linha.setOnClickFillInIntent(R.id.item_raiz, new Intent());
+
+            Intent liquidar = new Intent();
+            if (!alvo.isEmpty()) liquidar.setData(Uri.parse(alvo));
+            linha.setOnClickFillInIntent(R.id.item_liquidar, liquidar);
+
             return linha;
         }
 

@@ -83,14 +83,28 @@ public class SmartbalancoWidget extends AppWidgetProvider {
         views.setRemoteAdapter(R.id.widget_lista, servico);
         views.setEmptyView(R.id.widget_lista, R.id.widget_vazio);
 
-        // Tocar no widget (ou numa linha) abre o app
+        // Tocar no cabeçalho abre o app
         Intent abrir = new Intent(context, MainActivity.class);
         abrir.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent aoTocar = PendingIntent.getActivity(
             context, 0, abrir, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
         views.setOnClickPendingIntent(R.id.widget_titulo, aoTocar);
-        views.setPendingIntentTemplate(R.id.widget_lista, aoTocar);
+
+        // Template das linhas: cada uma completa o endereço (liquidar tal
+        // conta). Precisa ser MUTABLE — do Android 12 em diante, um template
+        // imutável simplesmente ignora o que a linha preenche, e o botão
+        // "Liquidar" abriria o app sem saber qual conta.
+        Intent modelo = new Intent(context, MainActivity.class);
+        modelo.setAction(Intent.ACTION_VIEW);
+        modelo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            flags |= PendingIntent.FLAG_MUTABLE;
+        }
+        PendingIntent template = PendingIntent.getActivity(context, 1, modelo, flags);
+        views.setPendingIntentTemplate(R.id.widget_lista, template);
 
         gerenciador.updateAppWidget(id, views);
     }
