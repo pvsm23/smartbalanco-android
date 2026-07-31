@@ -1,52 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Widget 4x2. RemoteViews aceita um conjunto pequeno de views: nada de
-     ConstraintLayout, só Linear/Relative/Frame e os widgets básicos. -->
+<!-- Widget da lista de despesas. Cresce na vertical: quanto mais alto, mais
+     linhas aparecem, porque a lista é um ListView de verdade (alimentado pelo
+     DespesasWidgetService) e não linhas fixas no layout. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_raiz"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/widget_fundo"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/widget_titulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Próxima conta"
-        android:textSize="11sp"
-        android:textStyle="bold"
-        android:textColor="#5B6878"
-        android:letterSpacing="0.06"
-        android:textAllCaps="true" />
-
-    <TextView
-        android:id="@+id/widget_descricao"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="—"
-        android:textSize="15sp"
-        android:textColor="#1E293B"
-        android:maxLines="1"
-        android:ellipsize="end" />
+    android:padding="14dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="4dp"
         android:baselineAligned="true">
 
         <TextView
-            android:id="@+id/widget_valor"
+            android:id="@+id/widget_titulo"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="—"
-            android:textSize="22sp"
+            android:text="A pagar"
+            android:textSize="11sp"
             android:textStyle="bold"
-            android:textColor="#B91C1C"
+            android:textColor="#5B6878"
+            android:letterSpacing="0.06"
+            android:textAllCaps="true"
             android:maxLines="1"
             android:ellipsize="end" />
 
@@ -54,19 +34,46 @@
             android:id="@+id/widget_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="13sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:textColor="#1A3A5C" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/widget_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#B91C1C"
+        android:maxLines="1" />
+
+    <!-- A lista. O empty aparece quando não há nada gravado ainda. -->
+    <ListView
+        android:id="@+id/widget_lista"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"
+        android:divider="#DBE2EC"
+        android:dividerHeight="1dp" />
+
+    <TextView
+        android:id="@+id/widget_vazio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Abra o app para carregar"
+        android:textSize="12sp"
+        android:textColor="#5B6878" />
+
+    <TextView
         android:id="@+id/widget_rodape"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text=""
-        android:textSize="11sp"
+        android:layout_marginTop="6dp"
+        android:textSize="10sp"
         android:textColor="#5B6878"
         android:maxLines="1"
         android:ellipsize="end" />
