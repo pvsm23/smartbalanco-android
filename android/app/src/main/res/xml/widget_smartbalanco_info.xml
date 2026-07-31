@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- updatePeriodMillis: 1800000 (30 min) é o MÍNIMO que o Android respeita;
+     valores menores são silenciosamente arredondados. A atualização de
+     verdade vem do app, via WidgetPlugin, quando os dados mudam. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_smartbalanco"
+    android:previewLayout="@layout/widget_smartbalanco"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />
