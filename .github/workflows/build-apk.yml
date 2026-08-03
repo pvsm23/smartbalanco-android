@@ -84,8 +84,9 @@ jobs:
         run: |
           ESPERADO="557a25aac4cd47fc3dc9853b16536f7d10ae7e02"
           APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -r | head -1)
+          # O digest é o último campo da linha "Signer #1 certificate SHA-1 digest: <hex>"
           OBTIDO=$("$APKSIGNER" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk \
-                   | grep -i "SHA-1 digest" | head -1 | tr -d ' ' | cut -d: -f2 | tr 'A-Z' 'a-z')
+                   | grep -i "SHA-1 digest" | head -1 | awk '{print $NF}' | tr 'A-Z' 'a-z')
           echo "esperado: $ESPERADO"
           echo "obtido:   $OBTIDO"
           if [ "$OBTIDO" != "$ESPERADO" ]; then
