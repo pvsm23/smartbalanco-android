@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Coluna de 5 atalhos. Cada item é um bloco clicável independente. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_fundo"
+    android:padding="6dp">
+
+    <LinearLayout android:id="@+id/acao_lancar"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="➕" android:textSize="19sp" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Lançar" android:textSize="9sp" android:maxLines="1"
+            android:includeFontPadding="false" android:textColor="#5B6878" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/acao_ia"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="✨" android:textSize="19sp" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="IA" android:textSize="9sp" android:maxLines="1"
+            android:includeFontPadding="false" android:textColor="#5B6878" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/acao_busca"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🚀" android:textSize="19sp" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Lançamentos" android:textSize="9sp" android:maxLines="1"
+            android:includeFontPadding="false" android:textColor="#5B6878" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/acao_aprovacoes"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="📥" android:textSize="19sp" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Aprovações" android:textSize="9sp" android:maxLines="1"
+            android:includeFontPadding="false" android:textColor="#5B6878" />
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/acao_relatorios"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="📈" android:textSize="19sp" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Relatórios" android:textSize="9sp" android:maxLines="1"
+            android:includeFontPadding="false" android:textColor="#5B6878" />
+    </LinearLayout>
+
+</LinearLayout>
