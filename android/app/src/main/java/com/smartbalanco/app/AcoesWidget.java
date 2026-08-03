@@ -23,7 +23,7 @@ public class AcoesWidget extends AppWidgetProvider {
         for (int id : ids) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_acoes);
 
-            ligar(context, views, R.id.acao_lancar, "novo", 10);
+            ligarPopup(context, views, R.id.acao_lancar, 10);
             ligar(context, views, R.id.acao_ia, "chat", 11);
             ligar(context, views, R.id.acao_busca, "busca", 12);
             ligar(context, views, R.id.acao_aprovacoes, "aprovacoes", 13);
@@ -38,6 +38,18 @@ public class AcoesWidget extends AppWidgetProvider {
      * Android reaproveita o PendingIntent e todos os ícones acabariam abrindo
      * a mesma tela.
      */
+    /** O "Lançar" abre o pop-up: e uma escolha entre tres caminhos, e decidir
+     *  sobre a tela inicial evita abrir o app so para escolher. */
+    private void ligarPopup(Context context, RemoteViews views, int idBotao, int codigo) {
+        Intent intent = new Intent(context, PopupLancarActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent aoTocar = PendingIntent.getActivity(
+            context, codigo, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+        views.setOnClickPendingIntent(idBotao, aoTocar);
+    }
+
     private void ligar(Context context, RemoteViews views, int idBotao, String destino, int codigo) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.setAction(Intent.ACTION_VIEW);

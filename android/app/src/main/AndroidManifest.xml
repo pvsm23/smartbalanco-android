@@ -57,6 +57,14 @@
                 android:resource="@xml/widget_novo_info" />
         </receiver>
 
+        <!-- Pop-up de lançamento: abre sobre a tela inicial, sem abrir o app.
+             excludeFromRecents para não virar um cartão solto nos recentes. -->
+        <activity
+            android:name=".PopupLancarActivity"
+            android:theme="@style/TemaPopup"
+            android:excludeFromRecents="true"
+            android:exported="false" />
+
         <!-- Widget 1x5: cinco atalhos do app -->
         <receiver
             android:name=".AcoesWidget"

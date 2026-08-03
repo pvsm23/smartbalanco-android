@@ -19,4 +19,15 @@
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
     </style>
+
+    <!-- Tema do pop-up: janela flutuante sobre a tela inicial, sem barra e
+         sem ocupar a tela toda. E o que faz o atalho nao parecer que abriu o
+         app. -->
+    <style name="TemaPopup" parent="android:Theme.Material.Light.Dialog.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.55</item>
+    </style>
 </resources>

@@ -24,9 +24,7 @@ public class NovoLancamentoWidget extends AppWidgetProvider {
         for (int id : ids) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_novo);
 
-            Intent abrir = new Intent(context, MainActivity.class);
-            abrir.setAction(Intent.ACTION_VIEW);
-            abrir.setData(Uri.parse("com.smartbalanco.app://novo"));
+            Intent abrir = new Intent(context, PopupLancarActivity.class);
             abrir.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             PendingIntent aoTocar = PendingIntent.getActivity(

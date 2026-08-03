@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_fundo"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="O que você quer lançar?"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#1A3A5C" />
+
+    <TextView android:id="@+id/pop_manual"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" android:padding="15dp"
+        android:background="@drawable/popup_item"
+        android:text="✍️  Lançar manual"
+        android:textSize="15sp" android:textColor="#1E293B" />
+
+    <TextView android:id="@+id/pop_documento"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" android:padding="15dp"
+        android:background="@drawable/popup_item"
+        android:text="📷  Lançar por documento"
+        android:textSize="15sp" android:textColor="#1E293B" />
+
+    <TextView android:id="@+id/pop_arquivar"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" android:padding="15dp"
+        android:background="@drawable/popup_item"
+        android:text="📎  Arquivar documento"
+        android:textSize="15sp" android:textColor="#1E293B" />
+
+    <TextView android:id="@+id/pop_fechar"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="14dp" android:padding="12dp"
+        android:text="Cancelar" android:gravity="center"
+        android:textSize="14sp" android:textStyle="bold" android:textColor="#5B6878" />
+
+</LinearLayout>
