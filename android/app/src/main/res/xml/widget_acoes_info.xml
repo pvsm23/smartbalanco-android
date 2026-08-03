@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 1 coluna x 5 linhas. minHeight alto de propósito: com 5 blocos, um
-     widget baixo cortaria os rótulos. -->
+<!-- Faixa de 5 colunas por 1 linha. minWidth alto porque com menos que
+     isso os cinco rótulos não cabem lado a lado. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="72dp"
-    android:minHeight="320dp"
-    android:targetCellWidth="1"
-    android:targetCellHeight="5"
+    android:minWidth="300dp"
+    android:minHeight="72dp"
+    android:targetCellWidth="5"
+    android:targetCellHeight="1"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/widget_acoes"
     android:previewLayout="@layout/widget_acoes"
-    android:resizeMode="vertical"
+    android:resizeMode="horizontal"
     android:widgetCategory="home_screen" />
