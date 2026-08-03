@@ -75,6 +75,25 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --console=plain
 
+      # Confere se o APK saiu assinado com a chave do projeto.
+      # Isto existe porque o erro já aconteceu: o workflow restaurava a
+      # keystore, mas o build.gradle não a usava, e cada APK saía com
+      # assinatura diferente. O sintoma só aparecia no celular, na hora de
+      # atualizar ("App não instalado"). Aqui a falha vira erro de build.
+      - name: Confere a assinatura do APK
+        run: |
+          ESPERADO="557a25aac4cd47fc3dc9853b16536f7d10ae7e02"
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -r | head -1)
+          OBTIDO=$("$APKSIGNER" verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk \
+                   | grep -i "SHA-1 digest" | head -1 | tr -d ' ' | cut -d: -f2 | tr 'A-Z' 'a-z')
+          echo "esperado: $ESPERADO"
+          echo "obtido:   $OBTIDO"
+          if [ "$OBTIDO" != "$ESPERADO" ]; then
+            echo "::error::APK assinado com chave diferente da do projeto. Instalar por cima falharia com 'App nao instalado'."
+            exit 1
+          fi
+          echo "Assinatura confere."
+
       - name: Lê a versão do build.gradle
         id: versao
         run: echo "v=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle)" >> "$GITHUB_OUTPUT"

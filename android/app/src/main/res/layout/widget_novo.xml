@@ -1,25 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- O "+" ficava achatado: dois textos empilhados num quadrado de 60dp não
+     cabiam, e o Android cortava. Agora o rótulo é menor, o sinal domina, e
+     a caixa tem folga. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/novo_raiz"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:padding="4dp"
     android:background="@drawable/widget_novo_fundo">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="+"
-        android:textSize="34sp"
+        android:textSize="26sp"
         android:textStyle="bold"
+        android:includeFontPadding="false"
         android:textColor="#FFFFFF" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
         android:text="Lançar"
-        android:textSize="11sp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        android:maxLines="1"
         android:textColor="#FFFFFF" />
 
 </LinearLayout>
