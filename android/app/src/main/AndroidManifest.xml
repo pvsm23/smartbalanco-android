@@ -30,6 +30,19 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="com.smartbalanco.app" />
             </intent-filter>
+
+            <!-- Faz o app aparecer no "Compartilhar" de qualquer aplicativo,
+                 para imagem e PDF: boleto, comprovante, nota fiscal. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
         </activity>
 
         <!-- Widget da tela inicial. exported="true" é obrigatório: quem
