@@ -18,6 +18,7 @@ public class WidgetPlugin extends Plugin {
     @PluginMethod
     public void atualizar(PluginCall call) {
         SmartbalancoWidget.atualizarTodos(getContext());
+        AgendaWidget.atualizarTodos(getContext());
         call.resolve();
     }
 }
