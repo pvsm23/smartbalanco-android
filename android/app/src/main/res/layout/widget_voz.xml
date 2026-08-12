@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mesma caixa do widget "+": o ícone domina e o rótulo é pequeno, senão o
+     Android corta os dois num quadrado de 72dp. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/voz_raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="4dp"
+    android:background="@drawable/widget_voz_fundo">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎤"
+        android:textSize="22sp"
+        android:includeFontPadding="false"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:text="Falar"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="#FFFFFF" />
+
+</LinearLayout>
