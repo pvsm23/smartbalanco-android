@@ -75,15 +75,14 @@ public class LeitorNotificacoes extends NotificationListenerService {
 
     /**
      * Pacotes observados. Qualquer outro é ignorado sem ser lido.
-     * Nubank e Itaú entram porque o custo é zero e a lista é fácil de ampliar.
+     *
+     * Só XP e Inter, por escolha: são os dois cartões que interessam. Cada
+     * pacote a mais é uma fonte a mais de notificação para filtrar errado.
      */
     private static final String[] PACOTES = {
         "com.xp.investimentos",      // XP
         "br.com.xpi",                // XP (variação)
-        "br.com.intermedium",        // Inter
-        "com.mercadopago.wallet",    // Mercado Pago
-        "com.nu.production",         // Nubank
-        "com.itau"                   // Itaú
+        "br.com.intermedium"         // Inter
     };
 
     /** "R$ 1.234,56" ou "R$ 12,90" — com ou sem espaço depois do R$. */
@@ -96,6 +95,38 @@ public class LeitorNotificacoes extends NotificationListenerService {
      */
     private static final Pattern ESTABELECIMENTO =
         Pattern.compile("(?:\\bem|\\bno|\\bna)\\s+([A-Z0-9][^.,;\\n]{2,40})");
+
+    /**
+     * Sinais de que a notificação é uma COMPRA NO CRÉDITO.
+     *
+     * Precisa de pelo menos um destes. Sem isto, "tem valor em reais" seria o
+     * único critério — e aviso de saldo, fatura fechada e Pix recebido também
+     * têm valor em reais.
+     */
+    private static final String[] SINAIS_DE_COMPRA = {
+        "compra", "credito", "cartao", "aprovada", "aprovado", "parcelad"
+    };
+
+    /**
+     * Se qualquer um destes aparecer, NÃO é compra no crédito, mesmo que um
+     * sinal acima também apareça. A exclusão vence de propósito: é melhor
+     * perder uma compra (você lança à mão) do que lançar um Pix recebido como
+     * despesa — o erro que passa despercebido na hora de aprovar.
+     *
+     * "debito" está aqui porque compra no débito também não interessa.
+     */
+    private static final String[] NAO_E_COMPRA = {
+        "pix", "transferencia", "ted", "doc ", "boleto", "deposito",
+        "recebeu", "recebido", "recebida", "estorno", "estornad",
+        "cancelad", "saldo", "fatura", "salario", "rendimento",
+        "investimento", "resgate", "aplicacao", "saque", "debito",
+        "cashback", "limite", "vencimento", "cobranca", "assinatura"
+    };
+
+    /** Quantas notificações descartadas guardar, para ajustar os padrões. */
+    private static final int LIMITE_IGNORADOS = 25;
+    public static final String CHAVE_IGNORADOS = "ignorados";
+    public static final String CHAVE_ULTIMA_VISTA = "ultimaVista";
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
@@ -111,12 +142,27 @@ public class LeitorNotificacoes extends NotificationListenerService {
             String completo = (titulo + " " + corpo).trim();
             if (completo.isEmpty()) return;
 
-            // Sem valor em reais não é compra: corta propaganda, aviso de
-            // login, "sua fatura fechou" e afins.
+            // Carimba que o serviço está vivo e recebendo. É o que a tela de
+            // diagnóstico mostra: sem isto, "nada capturado" pode ser tanto
+            // "não comprei nada" quanto "a permissão está desligada", e as
+            // duas coisas parecem iguais na tela.
+            marcarQueChegouAlgo();
+
+            // Sem valor em reais não é compra: corta propaganda e aviso de
+            // login antes de qualquer análise.
             Matcher mv = VALOR.matcher(completo);
             if (!mv.find()) return;
 
             String valorTexto = mv.group(1);
+
+            // Só compra no crédito. O que for descartado fica registrado, para
+            // dar para ajustar os padrões se um dia o banco mudar o texto e
+            // uma compra de verdade parar de ser reconhecida.
+            String motivo = porQueNaoEhCompra(completo);
+            if (motivo != null) {
+                registrarIgnorada(nomeDoBanco(pacote), completo, valorTexto, motivo);
+                return;
+            }
 
             String estabelecimento = "";
             Matcher me = ESTABELECIMENTO.matcher(completo);
@@ -129,6 +175,71 @@ public class LeitorNotificacoes extends NotificationListenerService {
             // Um erro aqui não pode derrubar o serviço: ele perderia as
             // próximas notificações até o Android reiniciá-lo.
             Log.w(TAG, "Falha ao ler notificação: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Devolve o motivo de NÃO ser compra no crédito, ou null se for.
+     *
+     * Devolver o motivo (em vez de um booleano) é o que deixa a tela explicar
+     * o descarte. "Ignorei 4" não ajuda ninguém; "ignorei porque é Pix" ajuda.
+     */
+    private String porQueNaoEhCompra(String texto) {
+        String t = semAcento(texto).toLowerCase();
+
+        for (String termo : NAO_E_COMPRA) {
+            if (t.contains(termo)) return "tem \"" + termo.trim() + "\"";
+        }
+        for (String sinal : SINAIS_DE_COMPRA) {
+            if (t.contains(sinal)) return null;
+        }
+        return "não parece compra no crédito";
+    }
+
+    /**
+     * Tira os acentos para a comparação. Sem isto, "cartão" e "cartao" seriam
+     * palavras diferentes, e o texto do banco varia.
+     */
+    private String semAcento(String t) {
+        return java.text.Normalizer.normalize(t, java.text.Normalizer.Form.NFD)
+                   .replaceAll("\\p{M}+", "");
+    }
+
+    /** Carimba a hora da última notificação recebida dos bancos observados. */
+    private void marcarQueChegouAlgo() {
+        try {
+            getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putLong(CHAVE_ULTIMA_VISTA, System.currentTimeMillis()).apply();
+        } catch (Exception e) { /* diagnóstico não pode derrubar a captura */ }
+    }
+
+    /**
+     * Guarda o que foi descartado, com o texto original e o motivo.
+     *
+     * Isto NÃO vira lançamento e não sai do aparelho sozinho. Existe para um
+     * caso concreto: o banco muda o texto da notificação, uma compra de verdade
+     * passa a ser descartada, e sem este registro o sintoma seria silêncio —
+     * você só perceberia semanas depois, ao conferir a fatura.
+     */
+    private void registrarIgnorada(String banco, String texto, String valor, String motivo) {
+        try {
+            SharedPreferences prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            JSONArray lista = new JSONArray(prefs.getString(CHAVE_IGNORADOS, "[]"));
+
+            JSONObject item = new JSONObject();
+            item.put("app", banco);
+            item.put("texto", texto);
+            item.put("valor", valor);
+            item.put("motivo", motivo);
+            item.put("quando", System.currentTimeMillis());
+            lista.put(item);
+
+            while (lista.length() > LIMITE_IGNORADOS) lista.remove(0);
+            prefs.edit().putString(CHAVE_IGNORADOS, lista.toString()).apply();
+
+            Log.i(TAG, "Ignorada (" + motivo + "): " + texto);
+        } catch (Exception e) {
+            Log.w(TAG, "Falha ao registrar ignorada: " + e.getMessage());
         }
     }
 
@@ -368,9 +479,6 @@ public class LeitorNotificacoes extends NotificationListenerService {
     private String nomeDoBanco(String pacote) {
         if (pacote.contains("xp")) return "XP";
         if (pacote.contains("intermedium")) return "Inter";
-        if (pacote.contains("mercadopago")) return "Mercado Pago";
-        if (pacote.contains("nu.production")) return "Nubank";
-        if (pacote.contains("itau")) return "Itaú";
         return pacote;
     }
 }

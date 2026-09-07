@@ -54,6 +54,38 @@ public class NotificacoesPlugin extends Plugin {
         }
     }
 
+    /**
+     * Tudo que a tela precisa para dizer se a captura está funcionando:
+     * permissão, quando chegou a última notificação dos bancos, o que está
+     * na fila e o que foi descartado.
+     *
+     * A "última vista" é o dado que desfaz a ambiguidade: sem ela, uma fila
+     * vazia pode ser "não comprei nada" ou "a permissão está desligada", e
+     * as duas coisas parecem iguais.
+     */
+    @PluginMethod
+    public void diagnostico(PluginCall call) {
+        try {
+            SharedPreferences prefs = getContext()
+                .getSharedPreferences(LeitorNotificacoes.PREFS, Context.MODE_PRIVATE);
+
+            String ativos = Settings.Secure.getString(
+                getContext().getContentResolver(), "enabled_notification_listeners");
+
+            JSObject r = new JSObject();
+            r.put("temPermissao",
+                  ativos != null && ativos.contains(getContext().getPackageName()));
+            r.put("ultimaVista", prefs.getLong(LeitorNotificacoes.CHAVE_ULTIMA_VISTA, 0));
+            r.put("naFila",
+                  new JSONArray(prefs.getString(LeitorNotificacoes.CHAVE_FILA, "[]")).length());
+            r.put("ignorados", JSArray.from(new JSONArray(
+                prefs.getString(LeitorNotificacoes.CHAVE_IGNORADOS, "[]"))));
+            call.resolve(r);
+        } catch (Exception e) {
+            call.reject("Falha no diagnóstico: " + e.getMessage());
+        }
+    }
+
     /** Devolve as compras capturadas, sem apagar. */
     @PluginMethod
     public void listar(PluginCall call) {
