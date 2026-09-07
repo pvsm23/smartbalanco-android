@@ -23,6 +23,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(WidgetPlugin.class);
+        registerPlugin(NotificacoesPlugin.class);
         super.onCreate(savedInstanceState);
         receberCompartilhado(getIntent());
     }
