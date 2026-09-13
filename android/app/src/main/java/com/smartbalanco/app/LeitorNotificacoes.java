@@ -69,6 +69,16 @@ public class LeitorNotificacoes extends NotificationListenerService {
     private static final String CHAVE_PEND_ONDE    = "pendentesOnde";
     private static final String CHAVE_PEND_BANCO   = "pendentesBanco";
 
+    /**
+     * A instância viva do serviço, para o plugin conseguir pedir uma varredura.
+     *
+     * O serviço é criado pelo Android, não por nós — não há como alcançá-lo de
+     * fora sem guardar a referência aqui. Ela é limpa ao desconectar: segurar
+     * um serviço morto faria a varredura falhar em silêncio, que é exatamente
+     * o defeito que este botão existe para acabar.
+     */
+    private static LeitorNotificacoes instancia = null;
+
     /** Evita empilhar agendamentos: um basta para a janela inteira. */
     private boolean avisoAgendado = false;
     private final Handler relogio = new Handler(Looper.getMainLooper());
@@ -156,6 +166,7 @@ public class LeitorNotificacoes extends NotificationListenerService {
         try {
             getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putLong(CHAVE_CONECTADO, System.currentTimeMillis()).apply();
+            instancia = this;
             Log.i(TAG, "Serviço conectado à barra de notificações.");
 
             // Varre o que já está na barra agora. A notificação do banco que
@@ -179,6 +190,7 @@ public class LeitorNotificacoes extends NotificationListenerService {
         try {
             getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                 .putLong(CHAVE_CONECTADO, 0).apply();
+            instancia = null;
             Log.w(TAG, "Serviço desconectado; pedindo religação.");
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
@@ -302,6 +314,54 @@ public class LeitorNotificacoes extends NotificationListenerService {
         } catch (Exception e) {
             Log.w(TAG, "Falha ao registrar ignorada: " + e.getMessage());
         }
+    }
+
+    /**
+     * Relê as notificações que estão na barra AGORA, a pedido do app.
+     *
+     * Existe porque o caminho normal é cego: o Android entrega cada notificação
+     * uma única vez, e se o serviço estava desligado naquele instante — app
+     * recém-atualizado, aparelho recém-ligado — a compra se perdeu sem deixar
+     * rastro. Enquanto o aviso do banco continuar na barra, isto o recupera.
+     *
+     * Devolve a CONTA do que encontrou em cada etapa, e não só o total. É a
+     * diferença entre "não achei nada" e "achei 14 notificações, nenhuma dos
+     * seus bancos" — a segunda diz onde está o problema.
+     */
+    public static String varrerAtivas() {
+        if (instancia == null) return "servico-desligado";
+        return instancia.varrer();
+    }
+
+    private String varrer() {
+        int total = 0, dosBancos = 0, capturadas = 0;
+        try {
+            StatusBarNotification[] ativas = getActiveNotifications();
+            if (ativas == null) return "0|0|0";
+
+            total = ativas.length;
+            for (StatusBarNotification sbn : ativas) {
+                if (!ehPacoteObservado(sbn.getPackageName())) continue;
+                dosBancos++;
+
+                int antes = tamanhoDaFila();
+                onNotificationPosted(sbn);
+                if (tamanhoDaFila() > antes) capturadas++;
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Falha na varredura: " + e.getMessage());
+            return "erro:" + e.getMessage();
+        }
+        Log.i(TAG, "Varredura: " + total + " na barra, " + dosBancos +
+                   " dos bancos, " + capturadas + " novas.");
+        return total + "|" + dosBancos + "|" + capturadas;
+    }
+
+    private int tamanhoDaFila() {
+        try {
+            SharedPreferences prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            return new JSONArray(prefs.getString(CHAVE_FILA, "[]")).length();
+        } catch (Exception e) { return 0; }
     }
 
     private boolean ehPacoteObservado(String pacote) {

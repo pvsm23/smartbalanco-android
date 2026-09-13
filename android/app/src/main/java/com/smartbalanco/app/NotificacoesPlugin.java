@@ -88,6 +88,31 @@ public class NotificacoesPlugin extends Plugin {
         }
     }
 
+    /**
+     * Relê as notificações que ainda estão na barra e devolve o que achou em
+     * cada etapa, para a tela poder explicar o resultado.
+     */
+    @PluginMethod
+    public void varrerAgora(PluginCall call) {
+        String r = LeitorNotificacoes.varrerAtivas();
+
+        JSObject saida = new JSObject();
+        if ("servico-desligado".equals(r)) {
+            saida.put("ok", false);
+            saida.put("motivo", "O serviço de leitura não está ligado.");
+        } else if (r.startsWith("erro:")) {
+            saida.put("ok", false);
+            saida.put("motivo", r.substring(5));
+        } else {
+            String[] p = r.split("\\|");
+            saida.put("ok", true);
+            saida.put("naBarra", Integer.parseInt(p[0]));
+            saida.put("dosBancos", Integer.parseInt(p[1]));
+            saida.put("capturadas", Integer.parseInt(p[2]));
+        }
+        call.resolve(saida);
+    }
+
     /** Devolve as compras capturadas, sem apagar. */
     @PluginMethod
     public void listar(PluginCall call) {
