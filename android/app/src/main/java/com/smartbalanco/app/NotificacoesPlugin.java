@@ -76,6 +76,8 @@ public class NotificacoesPlugin extends Plugin {
             r.put("temPermissao",
                   ativos != null && ativos.contains(getContext().getPackageName()));
             r.put("ultimaVista", prefs.getLong(LeitorNotificacoes.CHAVE_ULTIMA_VISTA, 0));
+            r.put("conectadoDesde", prefs.getLong(LeitorNotificacoes.CHAVE_CONECTADO, 0));
+            r.put("pacotes", LeitorNotificacoes.pacotesObservados());
             r.put("naFila",
                   new JSONArray(prefs.getString(LeitorNotificacoes.CHAVE_FILA, "[]")).length());
             r.put("ignorados", JSArray.from(new JSONArray(

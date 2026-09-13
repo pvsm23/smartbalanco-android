@@ -80,10 +80,23 @@ public class LeitorNotificacoes extends NotificationListenerService {
      * pacote a mais é uma fonte a mais de notificação para filtrar errado.
      */
     private static final String[] PACOTES = {
-        "com.xp.investimentos",      // XP
-        "br.com.xpi",                // XP (variação)
+        // O app da conta e do cartão XP é br.com.xp.carteira. O prefixo com
+        // ponto cobre os outros apps da casa sem pegar um "br.com.xpto"
+        // qualquer, já que a comparação é por startsWith.
+        //
+        // Os nomes anteriores ("com.xp.investimentos", "br.com.xpi") eram
+        // palpite meu e não existem: como pacote fora da lista é descartado na
+        // primeira linha, TODA notificação do XP era jogada fora em silêncio --
+        // sem erro, sem registro, sem sintoma. Nome de pacote se confere, não
+        // se adivinha.
+        "br.com.xp.",                // XP
         "br.com.intermedium"         // Inter
     };
+
+    /** Os mesmos nomes, para a tela de diagnóstico poder mostrá-los. */
+    public static String pacotesObservados() {
+        return android.text.TextUtils.join(", ", PACOTES);
+    }
 
     /** "R$ 1.234,56" ou "R$ 12,90" — com ou sem espaço depois do R$. */
     private static final Pattern VALOR =
@@ -127,6 +140,54 @@ public class LeitorNotificacoes extends NotificationListenerService {
     private static final int LIMITE_IGNORADOS = 25;
     public static final String CHAVE_IGNORADOS = "ignorados";
     public static final String CHAVE_ULTIMA_VISTA = "ultimaVista";
+    public static final String CHAVE_CONECTADO = "conectadoDesde";
+
+    /**
+     * O Android avisa aqui quando o serviço foi realmente ligado à barra de
+     * notificações. Ter permissão concedida e estar CONECTADO são coisas
+     * diferentes: atualizar o app derruba a conexão, e ela costuma voltar só
+     * quando a permissão é desligada e religada à mão.
+     *
+     * Sem este carimbo, "não capturei nada" tem duas explicações iguais na
+     * tela -- não houve compra, ou o serviço nunca ligou.
+     */
+    @Override
+    public void onListenerConnected() {
+        try {
+            getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putLong(CHAVE_CONECTADO, System.currentTimeMillis()).apply();
+            Log.i(TAG, "Serviço conectado à barra de notificações.");
+
+            // Varre o que já está na barra agora. A notificação do banco que
+            // chegou antes do serviço ligar ficaria perdida — o Android entrega
+            // cada uma só uma vez, e esta é a única chance de relê-la.
+            StatusBarNotification[] ativas = getActiveNotifications();
+            if (ativas != null) {
+                for (StatusBarNotification sbn : ativas) onNotificationPosted(sbn);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Falha ao conectar: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Desconectou. Pede para o Android religar em vez de esperar: sem isto, uma
+     * queda do serviço só se resolve reiniciando o aparelho.
+     */
+    @Override
+    public void onListenerDisconnected() {
+        try {
+            getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putLong(CHAVE_CONECTADO, 0).apply();
+            Log.w(TAG, "Serviço desconectado; pedindo religação.");
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                requestRebind(new android.content.ComponentName(this, LeitorNotificacoes.class));
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Falha ao pedir religação: " + e.getMessage());
+        }
+    }
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
