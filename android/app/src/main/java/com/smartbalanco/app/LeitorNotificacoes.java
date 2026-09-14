@@ -108,9 +108,15 @@ public class LeitorNotificacoes extends NotificationListenerService {
         return android.text.TextUtils.join(", ", PACOTES);
     }
 
-    /** "R$ 1.234,56" ou "R$ 12,90" — com ou sem espaço depois do R$. */
+    /**
+     * "R$ 1.234,56" ou "R$ 12,90" — com ou sem espaço depois do R$.
+     *
+     * Os espaços especiais estão na classe além do \s por cinto e suspensório:
+     * o texto já chega normalizado, mas esta expressão também é usada sobre
+     * texto cru em teste, e um valor não lido custa uma compra perdida.
+     */
     private static final Pattern VALOR =
-        Pattern.compile("R\\$\\s*([0-9]{1,3}(?:\\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})");
+        Pattern.compile("R\\$[\\s\\u00A0\\u202F\\u2007\\u2009]*([0-9]{1,3}(?:\\.[0-9]{3})*,[0-9]{2}|[0-9]+,[0-9]{2})");
 
     /**
      * O estabelecimento costuma vir depois de "em" ou "no/na":
@@ -208,12 +214,20 @@ public class LeitorNotificacoes extends NotificationListenerService {
             if (!ehPacoteObservado(pacote)) return;   // descarta antes de ler
 
             Bundle extras = sbn.getNotification().extras;
-            String titulo = textoDe(extras, "android.title");
-            String corpo  = textoDe(extras, "android.text");
-            if (corpo.isEmpty()) corpo = textoDe(extras, "android.bigText");
 
-            String completo = (titulo + " " + corpo).trim();
+            // Junta TODOS os campos de texto, em vez de escolher um. Cada app
+            // monta a notificação de um jeito: o valor pode estar no corpo, no
+            // texto expandido, no resumo ou numa das linhas de uma lista. Ler
+            // só "android.text" era apostar num formato.
+            String completo = juntarTextos(extras);
             if (completo.isEmpty()) return;
+
+            // Os bancos usam espaço NÃO SEPARÁVEL entre "R$" e o número, para
+            // o valor não quebrar de linha. O \\s das expressões do Java não
+            // casa com ele, e por isso "R$ 32,99" podia não ser reconhecido
+            // como valor nenhum. Normalizar aqui conserta a leitura inteira de
+            // uma vez, em vez de remendar cada expressão.
+            completo = normalizarEspacos(completo);
 
             // Carimba que o serviço está vivo e recebendo. É o que a tela de
             // diagnóstico mostra: sem isto, "nada capturado" pode ser tanto
@@ -224,7 +238,14 @@ public class LeitorNotificacoes extends NotificationListenerService {
             // Sem valor em reais não é compra: corta propaganda e aviso de
             // login antes de qualquer análise.
             Matcher mv = VALOR.matcher(completo);
-            if (!mv.find()) return;
+            if (!mv.find()) {
+                // Registrado, e não descartado em silêncio. Foi exatamente este
+                // buraco que escondeu o defeito: a notificação chegava, não era
+                // capturada, não aparecia como ignorada, e a tela não tinha como
+                // dizer que ela existiu.
+                registrarIgnorada(nomeDoBanco(pacote), completo, "", "sem valor em reais");
+                return;
+            }
 
             String valorTexto = mv.group(1);
 
@@ -239,7 +260,7 @@ public class LeitorNotificacoes extends NotificationListenerService {
 
             String estabelecimento = "";
             Matcher me = ESTABELECIMENTO.matcher(completo);
-            if (me.find()) estabelecimento = me.group(1).trim();
+            if (me.find()) estabelecimento = limparEstabelecimento(me.group(1));
 
             guardar(pacote, titulo, corpo, valorTexto, estabelecimento,
                     sbn.getPostTime());
@@ -364,12 +385,68 @@ public class LeitorNotificacoes extends NotificationListenerService {
         } catch (Exception e) { return 0; }
     }
 
+    /**
+     * Corta o que vem depois do nome da loja.
+     *
+     * "AMAZON BR via cartão digital" é o nome mais um detalhe do meio de
+     * pagamento; o que entra na descrição da despesa é só a primeira parte.
+     */
+    private String limparEstabelecimento(String bruto) {
+        String t = bruto.trim();
+        String[] cortes = { " via ", " no cartao ", " no cartão ", " com o ", " usando " };
+        for (String corte : cortes) {
+            int i = t.toLowerCase().indexOf(corte);
+            if (i > 0) t = t.substring(0, i);
+        }
+        return t.trim();
+    }
+
     private boolean ehPacoteObservado(String pacote) {
         if (pacote == null) return false;
         for (String p : PACOTES) {
             if (pacote.startsWith(p)) return true;
         }
         return false;
+    }
+
+    /**
+     * Junta título, corpo, texto expandido, resumo e as linhas de lista.
+     *
+     * Campos repetidos não atrapalham: o que se procura aqui é um valor em
+     * reais e algumas palavras, e ambos aguentam repetição.
+     */
+    private String juntarTextos(Bundle extras) {
+        StringBuilder sb = new StringBuilder();
+        String[] chaves = {
+            "android.title", "android.text", "android.bigText",
+            "android.summaryText", "android.subText", "android.infoText"
+        };
+        for (String c : chaves) {
+            String v = textoDe(extras, c);
+            if (!v.isEmpty()) sb.append(v).append(" ");
+        }
+
+        // Notificação em lista (InboxStyle) guarda o conteúdo aqui.
+        try {
+            CharSequence[] linhas = extras.getCharSequenceArray("android.textLines");
+            if (linhas != null) {
+                for (CharSequence l : linhas) if (l != null) sb.append(l).append(" ");
+            }
+        } catch (Exception e) { /* formato inesperado não pode derrubar a leitura */ }
+
+        return sb.toString().trim();
+    }
+
+    /**
+     * Troca por espaço comum os espaços especiais do Unicode: o não separável
+     * (U+00A0), o estreito (U+202F), o de dígito (U+2007) e o fino (U+2009).
+     */
+    private String normalizarEspacos(String t) {
+        return t.replace('\u00A0', ' ')
+                .replace('\u202F', ' ')
+                .replace('\u2007', ' ')
+                .replace('\u2009', ' ')
+                .replaceAll(" {2,}", " ");
     }
 
     private String textoDe(Bundle extras, String chave) {
