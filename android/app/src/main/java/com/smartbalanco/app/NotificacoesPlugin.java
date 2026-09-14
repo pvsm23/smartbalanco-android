@@ -80,8 +80,14 @@ public class NotificacoesPlugin extends Plugin {
             r.put("pacotes", LeitorNotificacoes.pacotesObservados());
             r.put("naFila",
                   new JSONArray(prefs.getString(LeitorNotificacoes.CHAVE_FILA, "[]")).length());
-            r.put("ignorados", JSArray.from(new JSONArray(
-                prefs.getString(LeitorNotificacoes.CHAVE_IGNORADOS, "[]"))));
+            // new JSArray(String), e NÃO JSArray.from(JSONArray).
+            //
+            // O from() chama new JSONArray(Object), que exige um array Java de
+            // verdade; um JSONArray não é um. A exceção que isso levanta é
+            // engolida lá dentro e o from devolve NULL -- a lista chegava vazia
+            // na tela sem erro nenhum, e foi o que escondeu tudo por dias.
+            r.put("ignorados",
+                  new JSArray(prefs.getString(LeitorNotificacoes.CHAVE_IGNORADOS, "[]")));
             call.resolve(r);
         } catch (Exception e) {
             call.reject("Falha no diagnóstico: " + e.getMessage());
@@ -120,10 +126,10 @@ public class NotificacoesPlugin extends Plugin {
             SharedPreferences prefs = getContext()
                 .getSharedPreferences(LeitorNotificacoes.PREFS, Context.MODE_PRIVATE);
 
-            JSONArray fila = new JSONArray(prefs.getString(LeitorNotificacoes.CHAVE_FILA, "[]"));
-
             JSObject r = new JSObject();
-            r.put("itens", JSArray.from(fila));
+            // Ver a nota em diagnostico(): JSArray.from de um JSONArray devolve
+            // null em silêncio. O construtor que recebe o texto JSON funciona.
+            r.put("itens", new JSArray(prefs.getString(LeitorNotificacoes.CHAVE_FILA, "[]")));
             call.resolve(r);
         } catch (Exception e) {
             call.reject("Falha ao ler a fila: " + e.getMessage());
