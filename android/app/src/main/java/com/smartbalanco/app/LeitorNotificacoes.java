@@ -262,7 +262,9 @@ public class LeitorNotificacoes extends NotificationListenerService {
             Matcher me = ESTABELECIMENTO.matcher(completo);
             if (me.find()) estabelecimento = limparEstabelecimento(me.group(1));
 
-            guardar(pacote, titulo, corpo, valorTexto, estabelecimento,
+            // O texto vai inteiro como corpo: desde que ele é montado juntando
+            // todos os campos, não existe mais um "título" separado para guardar.
+            guardar(pacote, "", completo, valorTexto, estabelecimento,
                     sbn.getPostTime());
 
         } catch (Exception e) {
