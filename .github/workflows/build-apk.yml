@@ -49,7 +49,13 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      # packages vazio de proposito: a acao, por padrao, tenta instalar o
+      # pacote "tools", que a Google tirou do repositorio do SDK -- e ai ela
+      # falha em 18s, antes de compilar qualquer coisa. O runner do GitHub ja
+      # vem com o SDK; so precisamos das licencas aceitas.
       - uses: android-actions/setup-android@v3
+        with:
+          packages: ""
 
       # O segredo vai por env, não interpolado no comando: assim o shell não vê
       # o valor como texto, e o printf não acrescenta o \n que o echo põe.
