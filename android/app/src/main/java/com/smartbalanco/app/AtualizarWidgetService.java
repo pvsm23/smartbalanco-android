@@ -40,6 +40,8 @@ public class AtualizarWidgetService extends JobService {
 
     public static final String CHAVE_URL = "servidorUrl";
     public static final String CHAVE_SESSAO = "sessao";
+    public static final String CHAVE_MES = "mesVisto";
+    public static final String CHAVE_ANO = "anoVisto";
 
     /**
      * Agenda a busca. JobScheduler e não Thread solta: o Android mata processo
@@ -87,6 +89,12 @@ public class AtualizarWidgetService extends JobService {
         HttpURLConnection con = null;
         try {
             String completa = url + "?acao=resumoWidget&sessao=" + URLEncoder.encode(sessao, "UTF-8");
+
+            // Mês escolhido pelas setas. Sem nada guardado, o servidor devolve
+            // o mês corrente por conta própria.
+            int mes = wprefs.getInt(CHAVE_MES, -1);
+            int ano = wprefs.getInt(CHAVE_ANO, -1);
+            if (mes >= 0 && ano > 0) completa += "&mes=" + mes + "&ano=" + ano;
             con = (HttpURLConnection) new URL(completa).openConnection();
             con.setInstanceFollowRedirects(true);   // o Apps Script redireciona
             con.setConnectTimeout(15000);

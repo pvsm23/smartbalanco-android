@@ -44,6 +44,8 @@ public class CalendarioWidget extends AppWidgetProvider {
 
     private static final String ACAO_DIA = "com.smartbalanco.app.WIDGET_DIA";
     private static final String ACAO_ATUALIZAR = "com.smartbalanco.app.WIDGET_ATUALIZAR";
+    private static final String ACAO_MES = "com.smartbalanco.app.WIDGET_MES";
+    private static final String EXTRA_PASSO = "passo";
     private static final String EXTRA_DIA = "dia";
 
     /** Qual dia está aberto, por widget. 0 = nenhum. */
@@ -73,6 +75,33 @@ public class CalendarioWidget extends AppWidgetProvider {
             prefs.edit().putInt(CHAVE_ABERTO + id, atual == dia ? 0 : dia).apply();
 
             desenhar(ctx, mgr, id);
+            return;
+        }
+
+        if (ACAO_MES.equals(acao)) {
+            int id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 0);
+            int passo = intent.getIntExtra(EXTRA_PASSO, 0);
+
+            // O mês pedido é guardado e a busca vai atrás dele. Trocar de mês
+            // sem ir ao servidor não dá: o resumo guardado é de um mês só, e
+            // guardar doze seria carregar o ano inteiro para ver um dia.
+            SharedPreferences prefs = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            c.set(prefs.getInt(AtualizarWidgetService.CHAVE_ANO, c.get(java.util.Calendar.YEAR)),
+                  prefs.getInt(AtualizarWidgetService.CHAVE_MES, c.get(java.util.Calendar.MONTH)), 1);
+            c.add(java.util.Calendar.MONTH, passo);
+
+            prefs.edit()
+                .putInt(AtualizarWidgetService.CHAVE_MES, c.get(java.util.Calendar.MONTH))
+                .putInt(AtualizarWidgetService.CHAVE_ANO, c.get(java.util.Calendar.YEAR))
+                .putInt(CHAVE_ABERTO + id, 0)     // o dia aberto era do mês antigo
+                .apply();
+
+            RemoteViews rvm = new RemoteViews(ctx.getPackageName(), R.layout.widget_calendario);
+            rvm.setTextViewText(R.id.nomeMes, "buscando");
+            mgr.partiallyUpdateAppWidget(id, rvm);
+
+            AtualizarWidgetService.disparar(ctx);
             return;
         }
 
@@ -144,6 +173,12 @@ public class CalendarioWidget extends AppWidgetProvider {
             rv.setTextColor(R.id.cota, vencido ? 0xFFF09595 : 0xFF5DCAA5);
             rv.setTextViewText(R.id.sobra, "restam " + dinheiro(sobra));
             rv.setTextViewText(R.id.atualizado, haQuantoTempo(prefs.getLong(CHAVE_QUANDO, 0)));
+
+            boolean corrente = r.optBoolean("ehMesCorrente", true);
+            rv.setTextViewText(R.id.nomeMes, nomeDoMes(r.optInt("mes", 0)) + " " +
+                               String.valueOf(r.optInt("ano", 0)).substring(2));
+            rv.setTextViewText(R.id.rotuloCota, vencido ? "você já passou do mês"
+                               : (corrente ? "hoje você pode gastar" : "média por dia do mês"));
 
             // ---------- grade ----------
             for (int i = 0; i < 42; i++) {
@@ -256,9 +291,15 @@ public class CalendarioWidget extends AppWidgetProvider {
                                      boolean futuro, boolean selecionado, boolean ehHoje) {
         String base;
         if (futuro) base = "cel_futuro";
-        else if (cota > 0 && gasto > cota) base = "cel_vermelho";
-        else if (cota > 0 && gasto > cota * 0.75) base = "cel_amarelo";
-        else base = "cel_verde";
+        // Sem cota não há folga: gastar qualquer coisa já é gastar o que não
+        // tem. Antes esse caso caía no verde, e um mês estourado aparecia
+        // inteiro verde -- o oposto do que estava acontecendo.
+        else if (cota <= 0) base = gasto > 0 ? "cel_vermelho" : "cel_futuro";
+        else if (gasto > cota) base = "cel_vermelho";
+        else if (gasto > cota * 0.75) base = "cel_amarelo";
+        else if (gasto > 0) base = "cel_verde";
+        // Dia passado sem gasto nenhum não é "economia": é dia sem movimento.
+        else base = "cel_futuro";
 
         if (selecionado) base += "_sel";
         else if (ehHoje) base += "_hoje";
@@ -270,6 +311,9 @@ public class CalendarioWidget extends AppWidgetProvider {
         rv.setOnClickPendingIntent(R.id.btFalar, abrirApp(ctx, "voz", 1));
         rv.setOnClickPendingIntent(R.id.btFoto, abrirApp(ctx, "novo-documento", 2));
         rv.setOnClickPendingIntent(R.id.btPendentes, abrirApp(ctx, "aprovacoes", 3));
+
+        rv.setOnClickPendingIntent(R.id.mesAnterior, intentDoMes(ctx, widgetId, -1));
+        rv.setOnClickPendingIntent(R.id.mesSeguinte, intentDoMes(ctx, widgetId, 1));
 
         Intent i = new Intent(ctx, CalendarioWidget.class);
         i.setAction(ACAO_ATUALIZAR);
@@ -302,6 +346,16 @@ public class CalendarioWidget extends AppWidgetProvider {
         i.putExtra(EXTRA_DIA, dia);
         i.setData(Uri.parse("smartbalanco://dia/" + widgetId + "/" + dia));
         return PendingIntent.getBroadcast(ctx, widgetId * 100 + dia, i,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    private static PendingIntent intentDoMes(Context ctx, int widgetId, int passo) {
+        Intent i = new Intent(ctx, CalendarioWidget.class);
+        i.setAction(ACAO_MES);
+        i.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId);
+        i.putExtra(EXTRA_PASSO, passo);
+        i.setData(Uri.parse("smartbalanco://mes/" + widgetId + "/" + passo));
+        return PendingIntent.getBroadcast(ctx, 5000 + widgetId * 10 + (passo > 0 ? 1 : 0), i,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 

@@ -55,10 +55,52 @@
             android:orientation="vertical"
             android:gravity="end">
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/mesAnterior"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:textSize="14sp"
+                    android:textColor="#8fb0d9"
+                    android:text="‹" />
+
+                <TextView
+                    android:id="@+id/nomeMes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="70dp"
+                    android:gravity="center"
+                    android:textSize="12sp"
+                    android:textColor="#dbe7f7"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/mesSeguinte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:textSize="14sp"
+                    android:textColor="#8fb0d9"
+                    android:text="›" />
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/sobra"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:textSize="10sp"
                 android:textColor="#8fb0d9"
                 android:text="" />
@@ -67,7 +109,6 @@
                 android:id="@+id/atualizado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
                 android:textSize="10sp"
                 android:textColor="#8fb0d9"
                 android:text="" />
@@ -92,24 +133,26 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel0"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -135,12 +178,12 @@
             <LinearLayout
                 android:id="@+id/cel1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -166,12 +209,12 @@
             <LinearLayout
                 android:id="@+id/cel2"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -197,12 +240,12 @@
             <LinearLayout
                 android:id="@+id/cel3"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -228,12 +271,12 @@
             <LinearLayout
                 android:id="@+id/cel4"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -259,12 +302,12 @@
             <LinearLayout
                 android:id="@+id/cel5"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -290,12 +333,12 @@
             <LinearLayout
                 android:id="@+id/cel6"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -366,19 +409,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel7"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -404,12 +448,12 @@
             <LinearLayout
                 android:id="@+id/cel8"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -435,12 +479,12 @@
             <LinearLayout
                 android:id="@+id/cel9"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -466,12 +510,12 @@
             <LinearLayout
                 android:id="@+id/cel10"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -497,12 +541,12 @@
             <LinearLayout
                 android:id="@+id/cel11"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -528,12 +572,12 @@
             <LinearLayout
                 android:id="@+id/cel12"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -559,12 +603,12 @@
             <LinearLayout
                 android:id="@+id/cel13"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -635,19 +679,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel14"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -673,12 +718,12 @@
             <LinearLayout
                 android:id="@+id/cel15"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -704,12 +749,12 @@
             <LinearLayout
                 android:id="@+id/cel16"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -735,12 +780,12 @@
             <LinearLayout
                 android:id="@+id/cel17"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -766,12 +811,12 @@
             <LinearLayout
                 android:id="@+id/cel18"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -797,12 +842,12 @@
             <LinearLayout
                 android:id="@+id/cel19"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -828,12 +873,12 @@
             <LinearLayout
                 android:id="@+id/cel20"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -904,19 +949,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel21"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -942,12 +988,12 @@
             <LinearLayout
                 android:id="@+id/cel22"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -973,12 +1019,12 @@
             <LinearLayout
                 android:id="@+id/cel23"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1004,12 +1050,12 @@
             <LinearLayout
                 android:id="@+id/cel24"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1035,12 +1081,12 @@
             <LinearLayout
                 android:id="@+id/cel25"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1066,12 +1112,12 @@
             <LinearLayout
                 android:id="@+id/cel26"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1097,12 +1143,12 @@
             <LinearLayout
                 android:id="@+id/cel27"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1173,19 +1219,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel28"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1211,12 +1258,12 @@
             <LinearLayout
                 android:id="@+id/cel29"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1242,12 +1289,12 @@
             <LinearLayout
                 android:id="@+id/cel30"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1273,12 +1320,12 @@
             <LinearLayout
                 android:id="@+id/cel31"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1304,12 +1351,12 @@
             <LinearLayout
                 android:id="@+id/cel32"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1335,12 +1382,12 @@
             <LinearLayout
                 android:id="@+id/cel33"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1366,12 +1413,12 @@
             <LinearLayout
                 android:id="@+id/cel34"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1442,19 +1489,20 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:orientation="horizontal"
             android:layout_marginBottom="3dp">
 
             <LinearLayout
                 android:id="@+id/cel35"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1480,12 +1528,12 @@
             <LinearLayout
                 android:id="@+id/cel36"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1511,12 +1559,12 @@
             <LinearLayout
                 android:id="@+id/cel37"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1542,12 +1590,12 @@
             <LinearLayout
                 android:id="@+id/cel38"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1573,12 +1621,12 @@
             <LinearLayout
                 android:id="@+id/cel39"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1604,12 +1652,12 @@
             <LinearLayout
                 android:id="@+id/cel40"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
@@ -1635,12 +1683,12 @@
             <LinearLayout
                 android:id="@+id/cel41"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginEnd="2dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:minHeight="22dp"
+                android:minHeight="20dp"
                 android:paddingTop="3dp"
                 android:paddingBottom="3dp"
                 android:background="@drawable/cel_futuro">
