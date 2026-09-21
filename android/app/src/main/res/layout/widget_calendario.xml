@@ -7,11 +7,11 @@
     célula ter o próprio destino de toque, que é o que faz o dia abrir.
 
     Cada célula tem DOIS textos. O de baixo fica escondido e aparece com o
-    valor quando o dia é tocado -- é isso que faz a célula crescer sem precisar
+    valor quando o dia é tocado. É isso que faz a célula crescer sem precisar
     redimensionar nada, que só existe do Android 12 em diante.
 
     Abaixo de cada semana há uma faixa escondida. Só a da semana do dia tocado
-    aparece, e é onde entra o detalhe. Assim o dia cresce no meio dos outros e
+    aparece, e é onde entra o detalhe: o dia cresce no meio dos outros e
     nenhuma semana sai do lugar.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
