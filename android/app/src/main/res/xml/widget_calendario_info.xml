@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    minWidth/minHeight pedem 4x4 celulas. resizeMode deixa esticar, e o
+    updatePeriodMillis de 30 minutos e o minimo que o Android aceita -- abaixo
+    disso ele ignora e usa 30 de qualquer jeito.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="250dp"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_calendario"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:previewImage="@mipmap/ic_launcher" />

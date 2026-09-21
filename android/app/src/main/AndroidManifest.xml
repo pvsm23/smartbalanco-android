@@ -91,6 +91,26 @@
                 android:resource="@xml/widget_agenda_info" />
         </receiver>
 
+        <!-- Widget 4x4: o mes inteiro, com o dia que cresce ao ser tocado.
+             O toque no dia e um broadcast para o proprio widget (acao
+             WIDGET_DIA), e nao abre o app. -->
+        <receiver android:name=".CalendarioWidget" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.smartbalanco.app.WIDGET_DIA" />
+                <action android:name="com.smartbalanco.app.WIDGET_ATUALIZAR" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_calendario_info" />
+        </receiver>
+
+        <!-- Busca o resumo sem abrir o app. BIND_JOB_SERVICE e exigencia do
+             sistema: sem essa permissao o JobScheduler recusa o servico. -->
+        <service
+            android:name=".AtualizarWidgetService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" />
+
         <!-- Widget 1x5: cinco atalhos do app -->
         <receiver
             android:name=".AcoesWidget"

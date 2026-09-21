@@ -1,0 +1,1772 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Widget de calendário do Smartbalanço.
+
+    A grade é montada como 6 linhas fixas de 7 células. Não é um GridView de
+    coleção de propósito: coleção exige um serviço à parte e não deixa cada
+    célula ter o próprio destino de toque, que é o que faz o dia abrir.
+
+    Cada célula tem DOIS textos. O de baixo fica escondido e aparece com o
+    valor quando o dia é tocado -- é isso que faz a célula crescer sem precisar
+    redimensionar nada, que só existe do Android 12 em diante.
+
+    Abaixo de cada semana há uma faixa escondida. Só a da semana do dia tocado
+    aparece, e é onde entra o detalhe. Assim o dia cresce no meio dos outros e
+    nenhuma semana sai do lugar.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_fundo"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rotuloCota"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="#8fb0d9"
+                android:text="hoje você pode gastar" />
+
+            <TextView
+                android:id="@+id/cota"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textColor="#5dcaa5"
+                android:text="--" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/sobra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textColor="#8fb0d9"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/atualizado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="10sp"
+                android:textColor="#8fb0d9"
+                android:text="" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="4dp">
+
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="d" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="s" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="t" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="q" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="q" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="s" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:textSize="9sp" android:textColor="#6f8fb8" android:text="s" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel0"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel9"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel10"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel11"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel12"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub12"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel13"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel14"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel15"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel16"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub16"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel17"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel18"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel19"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel20"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub20"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel21"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub21"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel22"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub22"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel23"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel24"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel25"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel26"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel27"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia27"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub27"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel28"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia28"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub28"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel29"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel30"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel31"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel32"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel33"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub33"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel34"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia34"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub34"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:id="@+id/cel35"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub35"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel36"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia36"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub36"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel37"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia37"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub37"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel38"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia38"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub38"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel39"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia39"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub39"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel40"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia40"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub40"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cel41"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="2dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:minHeight="22dp"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:background="@drawable/cel_futuro">
+
+                <TextView
+                    android:id="@+id/dia41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:textColor="#0b1b2e"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/sub41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="9sp"
+                    android:textColor="#0b1b2e"
+                    android:visibility="gone"
+                    android:text="" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/faixa5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/faixa_fundo"
+            android:padding="7dp"
+            android:layout_marginBottom="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/faixaTitulo5"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="11sp"
+                    android:textColor="#ffffff"
+                    android:text="" />
+
+                <TextView
+                    android:id="@+id/faixaResumo5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="11sp"
+                    android:textColor="#5dcaa5"
+                    android:text="" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/faixaLista5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textSize="10sp"
+                android:textColor="#b8cde8"
+                android:lineSpacingExtra="2dp"
+                android:text="" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/btFalar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:gravity="center"
+            android:padding="7dp"
+            android:background="@drawable/faixa_fundo"
+            android:textSize="11sp"
+            android:textColor="#dbe7f7"
+            android:text="falar" />
+
+        <TextView
+            android:id="@+id/btFoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:gravity="center"
+            android:padding="7dp"
+            android:background="@drawable/faixa_fundo"
+            android:textSize="11sp"
+            android:textColor="#dbe7f7"
+            android:text="foto" />
+
+        <TextView
+            android:id="@+id/btPendentes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:gravity="center"
+            android:padding="7dp"
+            android:background="@drawable/pendentes_fundo"
+            android:textSize="11sp"
+            android:textColor="#FAC775"
+            android:visibility="gone"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/btAtualizar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="7dp"
+            android:background="@drawable/faixa_fundo"
+            android:textSize="11sp"
+            android:textColor="#dbe7f7"
+            android:text="atualizar" />
+    </LinearLayout>
+</LinearLayout>
